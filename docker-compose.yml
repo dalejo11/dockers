@@ -26,7 +26,7 @@ services:
       DB_MYSQL_HOST: "npm_db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
-      DB_MYSQL_PASSWORD: "C0nectaw@11"
+      DB_MYSQL_PASSWORD: ""
       DB_MYSQL_NAME: "npm"
       DISABLE_IPV6: 'true'
     volumes:
@@ -51,10 +51,10 @@ services:
     container_name: npm_db
     hostname: npm_db
     environment:
-      MYSQL_ROOT_PASSWORD: 'C0nectaw@11'
+      MYSQL_ROOT_PASSWORD: ''
       MYSQL_DATABASE: 'npm'
       MYSQL_USER: 'npm'
-      MYSQL_PASSWORD: 'C0nectaw@11'
+      MYSQL_PASSWORD: ''
     volumes:
       - ${npm_db}:/var/lib/mysql
     mem_limit: 512M
@@ -72,8 +72,8 @@ services:
     depends_on:
       - adguard
     environment:
-      - WG_HOST=juankihd.duckdns.org
-      - PASSWORD=C0nectaw@11
+      - WG_HOST=xxx.duckdns.org
+      - PASSWORD=
 #      - WG_PORT=51820
       - WG_DEFAULT_ADDRESS=10.200.1.1x
       - WG_DEFAULT_DNS=10.200.0.254
@@ -133,7 +133,7 @@ services:
       - ${h_icons}:/app/public/icons
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - PASSWORD=C0nectaw@11
+      - PASSWORD=
       - TZ=Europe/Madrid
     mem_limit: 256M
     mem_reservation: 256M
@@ -150,7 +150,7 @@ services:
     restart: unless-stopped
     hostname: bookstack_db
     environment:
-    - MYSQL_ROOT_PASSWORD=C0nectaw@11
+    - MYSQL_ROOT_PASSWORD=
     - MYSQL_DATABASE=bookstack
     - MYSQL_USER=bookstack
     - MYSQL_PASSWORD=pwbookstack2022
@@ -176,7 +176,7 @@ services:
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
     - DB_PASSWORD=pwbookstack2022
-    - APP_URL=https://book.dalejo.es
+    - APP_URL=https://
     volumes:
     - ${book_app_1}:/var/www/bookstack/public/uploads
     - ${book_app_2}:/var/www/bookstack/storage/uploads
@@ -212,7 +212,7 @@ services:
 #    ports:
 #      - 3180:1337
     environment:
-      - BASE_URL=https://pla.dalejo.es
+      - BASE_URL=https://
 #      - BASE_URL=http://10.10.0.251:3180
       - TRUST_PROXY=0
       - DATABASE_URL=postgresql://postgres@postgres/planka
