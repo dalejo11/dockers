@@ -45,7 +45,7 @@ services:
      test: ["CMD", "/bin/check-health"]
      interval: 10s
      timeout: 3s
-####################### NGINX PROXY MANAGER DATABASE ########################
+####################### NPM DATABASE ########################
   npm_db:
     image: 'jc21/mariadb-aria:latest'
     restart: always
@@ -64,3 +64,24 @@ services:
     networks:
       private_network:
         ipv4_address: ${npm_db_ip}
+####################### ADGUARD DNS SERVER  ########################
+  adguard:
+    image: adguard/adguardhome:latest
+    restart: always
+    container_name: adguard
+    hostname: adguard
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+#      - 784:784/udp ## Comentado por no usarse
+#      - 853:853/tcp ## Comentado por no usarse
+      - 3000:3000/tcp
+    volumes:
+      - ${ad_work}:/opt/adguardhome/work
+      - ${ad_conf}:/opt/adguardhome/conf
+    mem_limit: 512M
+    mem_reservation: 256M
+    cpus: 0.5
+    networks:
+      private_network:
+        ipv4_address: ${ad_ip}
