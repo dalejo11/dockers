@@ -9,42 +9,61 @@ networks:
         - subnet: 10.100.0.0/24
 
 services:
+####################### ADGUARD DNS SERVER  ########################
+  adguard:
+    image: adguard/adguardhome:latest
+    env_file: /srv/docker/.env
+    container_name: adguard
+    hostname: adguard
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 3000:3000/tcp #se descomentará despues para no dejar puerto publicado en la maquina
+    volumes:
+      - ${ad_work}:/opt/adguardhome/work
+      - ${ad_conf}:/opt/adguardhome/conf
+    restart: always
+    mem_limit: 256M
+    mem_reservation: 128M
+    cpus: 0.5
+    networks:
+      private_network:
+        ipv4_address: ${ad_ip}
 ####################### NGINX PROXY MANAGER ########################
   proxy_app: #nombre del servicio
-    image: 'jc21/nginx-proxy-manager:latest' # imagen que se requiere para container
-    env_file: /srv/docker/.env
-    restart: unless-stopped #politicas de reinicio
-    container_name: npm_app # nombre queda daremos al contenedor
-    hostname: npm_app # nombre de host dentro de la red
-    depends_on: # que 
+    image: 'jc21/nginx-proxy-manager:latest' #imagen que se requiere para container
+    container_name: npm_app #nombre que daremos al contenedor
+    hostname: npm_app #nombre de host dentro de la red
+    depends_on: 
       - npm_db
     ports:
-      # These ports are in format <host-port>:<container-port>
       - 80:80 # Public HTTP Port
       - 443:443 # Public HTTPS Port
       - 61081:81 # Admin Web Port
     environment:
-      DB_MYSQL_HOST: ''
-      DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: ''
+      DB_MYSQL_HOST: '' #set container name
+      DB_MYSQL_PORT: 3306 #port
+      DB_MYSQL_USER: '' #user
       DB_MYSQL_PASSWORD: ''
       DB_MYSQL_NAME: ''
       DISABLE_IPV6: 'true'
     volumes:
       - ${npm_data}:/data
       - ${npm_ssl}:/etc/letsencrypt
-    networks:
-      private_network:
-        ipv4_address: ${npm_app_ip}
-    dns:
-    - ${ad_ip}
-    mem_limit: 512M
-    mem_reservation: 256M
-    cpus: 0.5
     healthcheck:
      test: ["CMD", "/bin/check-health"]
      interval: 10s
      timeout: 3s
+    dns:
+    - ${ad_ip}
+    networks:
+      private_network:
+        ipv4_address: ${npm_app_ip}
+    restart: unless-stopped #politicas de reinicio
+    mem_limit: 512M
+    mem_reservation: 256M
+    cpus: 0.5
+
 ####################### NPM DATABASE ########################
   npm_db:
     image: 'jc21/mariadb-aria:latest'
@@ -64,24 +83,3 @@ services:
     networks:
       private_network:
         ipv4_address: ${npm_db_ip}
-####################### ADGUARD DNS SERVER  ########################
-  adguard:
-    image: adguard/adguardhome:latest
-    restart: always
-    container_name: adguard
-    hostname: adguard
-    ports:
-      - 53:53/tcp
-      - 53:53/udp
-#      - 784:784/udp ## Comentado por no usarse
-#      - 853:853/tcp ## Comentado por no usarse
-      - 3000:3000/tcp
-    volumes:
-      - ${ad_work}:/opt/adguardhome/work
-      - ${ad_conf}:/opt/adguardhome/conf
-    mem_limit: 512M
-    mem_reservation: 256M
-    cpus: 0.5
-    networks:
-      private_network:
-        ipv4_address: ${ad_ip}
